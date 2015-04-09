@@ -26,45 +26,57 @@
 require 'mixlib/shellout'
 
 action :create do
-#  if exists?
-#    new_resource.updated_by_last_action(false)
-#	Chef::Log.debug("The scope already exists")
-#  else
+  if exists?
+    new_resource.updated_by_last_action(false)
+	Chef::Log.info("The scope already exists")
+  else
+    # Required: Startrange, Endrange, subnetmask, name
     if node[:os_version] >= '6.2'
 	  Chef::Log.debug("Windows Server 2012 Family Detected")
       if new_resource.version == '6'
-         Chef::Log.debug("IPv6")
-         powershell_script "create_DhcpServerv4Scope_#{new_resource.name}" do
-	       code "Add-DhcpServerv4Scope -StartRange #{new_resource.startrange} -EndRange #{new_resource.endrange} -Name \"#{new_resource.name}\" -SubnetMask #{new_resource.subnetmask}"
-		# Optional hash needed
-         end
-      else
-	    Chef::Log.debug("Not IPv4")
+        cmd = "Add-DhcpServerv6Scope"
 	  end
 	  if new_resource.version == '4'
-        Chef::Log.debug("IPv4")
-	    powershell_script "create_DhcpServerv4Scope_#{new_resource.name}" do
-	      code "Add-DhcpServerv4Scope -StartRange #{new_resource.startrange} -EndRange #{new_resource.endrange} -Name \"#{new_resource.name}\" -SubnetMask #{new_resource.subnetmask}"
-	   # Optional hash needed
-	    end
-	  else
-	    Chef::Log.debug("Not IPv4")
-	  end
+	    cmd = "Add-DhcpServerv4Scope"
+      end
+      
+	  cmd << " -StartRange #{new_resource.startrange}"
+      cmd << " -EndRange #{new_resource.endrange}"
+      cmd << " -Name \"#{new_resource.name}\"" 
+	  cmd << " -SubnetMask #{new_resource.subnetmask}"	  
+	  # Optional hash needed
+	  
+      if new_resource.version == '6'
+		powershell_script "create_DhcpServerv6Scope_#{new_resource.name}" do
+	       code cmd
+		end
+      end
+	  if new_resource.version == '4'
+		powershell_script "create_DhcpServerv4Scope_#{new_resource.name}" do
+	       code cmd
+		end
+      end
     else
 	  # Server 2008
 	  Chef::Log.debug("Windows Server 2008 Family Detected")
 	end
     new_resource.updated_by_last_action(true)
-#  end
+    Chef::Log.info("Scope \"#{new_resource.name}\" \"#{new_resource.scopeid}\" was created")
+  end
 end
 
 action :delete do
 end
 
 def exists?
-  if node[:os_version] >= '6.2'
-    check = Mixlib::ShellOut.new("powershell.exe -command 'Get-DhcpServer4Scope #{new_resource.name}'").run_command
-	check.stdout.match(new_resource.name)
-	Chef::Log.info(stdout)
-  end
+#  if node[:os_version] >= '6.2'
+     if new_resource.version == '6' 
+       check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Scope -scopeid #{new_resource.scopeid}\"").run_command
+	   check.stdout.include?(new_resource.scopeid)
+	 end
+	 if new_resource.version == '4'
+	   check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Scope | fl scopeid\"").run_command
+	   check.stdout.include?(new_resource.scopeid)
+	 end
+#  end
 end

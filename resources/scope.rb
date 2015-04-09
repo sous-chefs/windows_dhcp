@@ -28,12 +28,13 @@ actions :create, :delete
 default_action :create
 
 attribute :name, :kind_of => String, :name_attribute => true
-attribute :startrange, :kind_of => String, :regex => Resolv::IPv4::Regex, :required => true
-attribute :endrange, :kind_of => String, :regex => Resolv::IPv4::Regex, :required => true
-attribute :subnetmask, :kind_of => String, :regex => Resolv::IPv4::Regex, :required => true
+attribute :startrange, :kind_of => String, :regex => Resolv::IPv4::Regex
+attribute :endrange, :kind_of => String, :regex => Resolv::IPv4::Regex
+attribute :subnetmask, :kind_of => String, :regex => Resolv::IPv4::Regex
 attribute :computername, :kind_of => String
 attribute :description, :kind_of => String
 attribute :version, :kind_of => String, :default => '4'
+attribute :scopeid, :kind_of => String, :regex => Resolv::IPv4::Regex#, :required => true
 
 #  Optional params shared
 #    AsJob
