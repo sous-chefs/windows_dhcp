@@ -34,7 +34,7 @@ attribute :subnetmask, :kind_of => String, :regex => Resolv::IPv4::Regex
 attribute :computername, :kind_of => String
 attribute :description, :kind_of => String
 attribute :version, :kind_of => String, :default => '4'
-attribute :scopeid, :kind_of => String, :regex => Resolv::IPv4::Regex#, :required => true
+attribute :scopeid, :kind_of => String, :regex => (Resolv::IPv4::Regex or Resolv::IPv6::Regex), :required => true
 
 #  Optional params shared
 #    AsJob

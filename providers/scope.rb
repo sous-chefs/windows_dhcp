@@ -28,7 +28,7 @@ require 'mixlib/shellout'
 action :create do
   if exists?
     new_resource.updated_by_last_action(false)
-	Chef::Log.info("The scope already exists")
+	Chef::Log.info("The scope #{new_resource.name} #{new_resource.scopeid} already exists")
   else
     # Required: Startrange, Endrange, subnetmask, name
     if node[:os_version] >= '6.2'
@@ -61,11 +61,43 @@ action :create do
 	  Chef::Log.debug("Windows Server 2008 Family Detected")
 	end
     new_resource.updated_by_last_action(true)
-    Chef::Log.info("Scope \"#{new_resource.name}\" \"#{new_resource.scopeid}\" was created")
+    Chef::Log.info("The scope #{new_resource.name} #{new_resource.scopeid} was created")
   end
 end
 
 action :delete do
+  if exists?
+	new_resource.updated_by_last_action(true)
+	Chef::Log.info("The scope #{new_resource.name} #{new_resource.scopeid} exists, deleting")
+    if node[:os_version] >= '6.2'
+	  Chef::Log.debug("Windows Server 2012 Family Detected")
+	  if new_resource.version == '6'
+        cmd = "Remove-DhcpServerv6Scope"
+	  end
+	  if new_resource.version == '4'
+        cmd = "Remove-DhcpServerv4Scope"
+      end
+	
+	  cmd << " -scopeid \"#{new_resource.scopeid}\""
+	  # Optional hash needed
+	
+	  if new_resource.version == '6'
+	    powershell_script "delete_DhcpServerv6Scope_#{new_resource.name}" do
+	      code cmd
+		end
+	  end
+	  if new_resource.version == '4'
+		powershell_script "delete_DhcpServerv4Scope_#{new_resource.name}" do
+	      code cmd
+		end
+      end  
+	else
+	  # Server 2008
+	  Chef::Log.debug("Windows Server 2008 Family Detected")
+	end
+	new_resource.updated_by_last_action(false)
+    Chef::Log.info("The scope #{new_resource.name} #{new_resource.scopeid} was not found")
+  end
 end
 
 def exists?
