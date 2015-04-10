@@ -41,7 +41,6 @@ action :create do
 	  
 	  # Allow use of : in macmacaddress
       hwaddress = new_resource.macaddress.gsub(':','-')
-	  Chef::Log.info("macaddress #{new_resource.macaddress} hwaddress #{hwaddress}")
 	  cmd << " -IPAddress #{new_resource.ipaddress}"
 	  cmd << " -scopeid #{new_resource.scopeid}"
       cmd << " -clientid #{hwaddress}"
