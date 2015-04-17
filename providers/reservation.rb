@@ -83,8 +83,6 @@ action :delete do
 	  cmd << " -scopeid #{new_resource.scopeid}"
       cmd << " -IPAddress #{new_resource.ipaddress}"
       cmd << " -clientid #{hwaddress}"
-#      cmd << " -description #{new_resource.description}"
-      # Optional hash needed
 	  
 	  if new_resource.version == '6'
 	    powershell_script "delete_DhcpServerv6Reservation_#{new_resource.name}" do
@@ -100,8 +98,9 @@ action :delete do
 	  # Server 2008
 	  Chef::Log.debug("Windows Server 2008 Family Detected")
 	end
+  else
 	new_resource.updated_by_last_action(false)
-	Chef::Log.info("The reservation #{new_resource.name} already exists")
+	Chef::Log.info("The reservation #{new_resource.name} was not found")
   end
 end
 
