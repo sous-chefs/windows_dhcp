@@ -26,25 +26,20 @@
 if node[:os_version] >= "6.2"
   [
     "DHCPServer",
-	"ServerManager-Core-RSAT",
-	"ServerManager-Core-RSAT-Role-Tools",
-	"DHCPServer-Tools"
+    "ServerManager-Core-RSAT",
+	  "ServerManager-Core-RSAT-Role-Tools"
   ].each do |feature|
     windows_feature feature do
-	  action :install
-	end
+	    action :install
+      all true
+	  end
   end
-  # vagrant rename of systems causes this to fail
-  # addressed with https://github.com/WinRb/vagrant-windows/issues/179
   powershell_script "DHCP security groups" do
     code 'netsh dhcp add securitygroups'
   end
   service 'dhcpserver' do
     action :restart
   end
-#  powershell_script "Authorize" do
-#    code 'Add-dhcpserverindc #[:hostname] #[:ipaddress]'
-#  end
 else
   [
     "DHCPServer",
@@ -53,6 +48,7 @@ else
   ].each do |feature|
     windows_feature feature do
 	  action :install
+    all true
 	end
   end
 end
