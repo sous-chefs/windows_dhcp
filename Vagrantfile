@@ -81,7 +81,7 @@ machines = {
       'recipe[windows_dhcp]',
       'recipe[test_windows_dhcp::scopes]',
       'recipe[test_windows_dhcp::leases]',
-      'recipe[test_windows_dhcp::reservations]'
+      'recipe[test_windows_dhcp::reservations]',
       'recipe[test_windows_dhcp::data_bag]'
       ]
   },
