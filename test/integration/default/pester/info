@@ -1,0 +1,1 @@
+bats: This tells Test Kitchen (and Busser) which Busser runner plugin needs to be installed on the remote instance. In other words the bats directory name will cause Busser to install busser-bats from RubyGems.
