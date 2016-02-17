@@ -79,10 +79,10 @@ machines = {
 #      'recipe[test_windows_ad::setup_dc]',
 #      'recipe[test_windows_ad::join_domain]'
       'recipe[windows_dhcp]',
-#      'recipe[test_windows_dhcp::scopes]',
-#      'recipe[test_windows_dhcp::leases]',
-#      'recipe[test_windows_dhcp::reservations]'
-      'recipe[windows_dhcp::data_bag]'
+      'recipe[test_windows_dhcp::scopes]',
+      'recipe[test_windows_dhcp::leases]',
+      'recipe[test_windows_dhcp::reservations]'
+      'recipe[test_windows_dhcp::data_bag]'
       ]
   },
   'win2012r2core' => {
