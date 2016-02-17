@@ -27,7 +27,8 @@ if node[:os_version] >= "6.2"
   [
     "DHCPServer",
     "ServerManager-Core-RSAT",
-	  "ServerManager-Core-RSAT-Role-Tools"
+    "ServerManager-Core-RSAT-Role-Tools",
+    "DHCPServer-Tools"
   ].each do |feature|
     windows_feature feature do
 	    action :install
@@ -43,12 +44,12 @@ if node[:os_version] >= "6.2"
 else
   [
     "DHCPServer",
-	"DHCPServer-Tools",
-	"DHCPServer-RSATClient-Tools"
+    "DHCPServer-Tools",
+    "DHCPServer-RSATClient-Tools"
   ].each do |feature|
     windows_feature feature do
-	  action :install
-    all true
-	end
+      action :install
+      all true
+    end
   end
 end
