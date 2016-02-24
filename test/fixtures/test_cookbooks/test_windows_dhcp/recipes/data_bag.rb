@@ -1,10 +1,10 @@
-zones = data_bag('zones-sta')
+scopes = data_bag('scopes')
 
-Chef::Log.error('Data bag cannot be empty') if zones.empty?
+Chef::Log.error('Data bag cannot be empty') if scopes.empty?
 
-zones.each do |scope|
+scopes.each do |scope|
 
-  scope_info = data_bag_item('zones', scope)
+  scope_info = data_bag_item('scopes', scope)
   
   windows_dhcp_scope(scope) do
     action [:create]
@@ -13,5 +13,18 @@ zones.each do |scope|
     startrange scope_info['startrange']
     endrange scope_info['endrange']
     subnetmask scope_info['netmask']
+  end
+
+  hosts = scope_info['hosts']
+  
+  hosts.each do |host, option|
+    windows_dhcp_reservation host do
+      action [:create]
+      scopeid scope_info['scopeid']
+      ipaddress option['ip']
+      macaddress option['mac']
+      computername scope_info['computername']
+      description option['description']
+    end
   end
 end
