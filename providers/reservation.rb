@@ -43,6 +43,7 @@ action :create do
 	  cmd << " -scopeid #{new_resource.scopeid}"
       cmd << " -IPAddress #{new_resource.ipaddress}"
       cmd << " -clientid #{hwaddress}"
+      cmd << " -name #{new_resource.name}"
 #      cmd << " -description #{new_resource.description}"
       # Optional hash needed
 	  
