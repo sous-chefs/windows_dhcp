@@ -5,7 +5,7 @@ This file is used to list changes made in each version of the windows_dhcp cookb
 
 0.1.0
 -----
-- [your_name] - Initial release of windows_dhcp
+- Initial release of windows_dhcp
 
 - - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.
