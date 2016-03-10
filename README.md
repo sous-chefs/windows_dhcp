@@ -91,6 +91,20 @@ Resource/Provider
       scopeid '192.168.1.1'
       macaddress '00-00-00-00-00-00'
     end
+    
+    # delete reservation entry of 'workstation' at 192.168.1.10
+    windows_dhcp_reservation 'workstation' do
+      action :delete
+      scopeid '192.168.1.1'
+    end
+    
+    # update reservation entry of 'workstation' at 192.168.1.10 with mac address of '00-00-00-00-00-10'
+    windows_dhcp_reservation 'workstation' do
+      action :update
+      ipaddress '192.168.1.10'
+      macaddress '00-00-00-00-00-10'
+      scopeid '192.168.1.1'
+    end
 ```
 `scope`
 --------
