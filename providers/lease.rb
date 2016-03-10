@@ -103,9 +103,6 @@ action :delete do
   end
 end
 
-action :update do
-end
-
 def exists?
 #  if node[:os_version] >= "6.2"
     if new_resource.version == '6' 
