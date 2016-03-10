@@ -80,10 +80,8 @@ action :delete do
 	    cmd = "Remove-DhcpServerv4Reservation"
 	  end
 	  # Allow use of : in macmacaddress
-      hwaddress = new_resource.macaddress.gsub(':','-')
-	  cmd << " -scopeid #{new_resource.scopeid}"
       cmd << " -IPAddress #{new_resource.ipaddress}"
-      cmd << " -clientid #{hwaddress}"
+
 	  
 	  if new_resource.version == '6'
 	    powershell_script "delete_DhcpServerv6Reservation_#{new_resource.name}" do
