@@ -3,6 +3,10 @@ windows_dhcp CHANGELOG
 
 This file is used to list changes made in each version of the windows_dhcp cookbook.
 
+0.2.0
+
+- reservations update provider
+
 0.1.0
 -----
 - Initial release of windows_dhcp
