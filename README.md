@@ -42,7 +42,6 @@ Resource/Provider
 ### Actions
 - :create: Creates a lease entry
 - :delete: Deletes a lease entry
-- :update: Updates a lease entry
 
 ### Attribute Parameters
 
