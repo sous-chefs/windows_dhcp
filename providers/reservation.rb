@@ -138,11 +138,11 @@ end
 def exists?
 #  if node[:os_version] >= "6.2"
     if new_resource.version == '6' 
-      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Reservation -scopeid #{new_resource.scopeid}\"").run_command
+      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Reservation -scopeid #{new_resource.scopeid} -clientid #{new_resource.hwaddress}\"").run_command
 	  check.stdout.include?(new_resource.name)
     end
 	if new_resource.version == '4' 
-      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Reservation -scopeid #{new_resource.scopeid}\"").run_command
+      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Reservation -scopeid #{new_resource.scopeid} -clientid #{new_resource.hwaddress}\"").run_command
 	  check.stdout.include?(new_resource.name)
     end
 #  end
