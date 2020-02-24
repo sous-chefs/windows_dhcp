@@ -25,20 +25,13 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-%w(
-  DHCPServer
-  ServerManager-Core-RSAT
-  ServerManager-Core-RSAT-Role-Tools
-  DHCPServer-Tools
-).each do |feature|
-  windows_feature feature do
-    action :install
-    all true
-  end
+windows_feature %w( DHCPServer ServerManager-Core-RSAT ServerManager-Core-RSAT-Role-Tools DHCPServer-Tools) do
+  action :install
+  all true
 end
 
-powershell_script 'DHCP security groups' do
-  code 'netsh dhcp add securitygroups'
+execute 'DHCP security groups' do
+  command 'netsh dhcp add securitygroups'
 end
 
 service 'dhcpserver' do

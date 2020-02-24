@@ -11,7 +11,7 @@ This cookbook installs the DHCP on Windows Server including all necessary roles 
 
 ### Cookbooks
 
-* windows - Official windows cookbook from Chef Software: https://supermarket.chef.io/cookbooks/windows
+* windows version 4.2 or later - Official windows cookbook from Chef Software: https://supermarket.chef.io/cookbooks/windows
 
 ## Usage
 
