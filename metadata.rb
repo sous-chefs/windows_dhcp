@@ -5,5 +5,4 @@ license          'MIT'
 description      'Installs/Configures windows_dhcp'
 version          '0.2.0'
 supports         'windows', '>= 6.2'
-depends          'windows', '> 4.1.2' # array support in windows_feature
-chef_version     '> 12.7' # custom resource support
+chef_version     '> 14'
