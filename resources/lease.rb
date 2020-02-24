@@ -58,67 +58,64 @@ property :computername, String
 
 action :create do
   if exists?
-    new_resource.updated_by_last_action(false)
-    Chef::Log.info("The lease #{new_resource.name} already exists")
+    Chef::Log.debug("The lease #{new_resource.name} already exists")
   else
-    if new_resource.version == '6'
-      cmd = 'Add-DhcpServerv6Lease'
-    end
-    if new_resource.version == '4'
-      cmd = 'Add-DhcpServerv4Lease'
-    end
+    converge_by "create lease #{new_resource.name}" do
+      if new_resource.version == '6'
+        cmd = 'Add-DhcpServerv6Lease'
+      end
+      if new_resource.version == '4'
+        cmd = 'Add-DhcpServerv4Lease'
+      end
 
-    # Allow use of : in macmacaddress
-    hwaddress = new_resource.macaddress.gsub(':', '-')
-    cmd << " -IPAddress #{new_resource.ipaddress}"
-    cmd << " -scopeid #{new_resource.scopeid}"
-    cmd << " -clientid #{hwaddress}"
-    #      cmd << " -leaseexpirytime #{new_resource.leaseexpirytime}"
-    #      cmd << " -description #{new_resource.description}"
-    # Optional hash needed
+      # Allow use of : in macmacaddress
+      hwaddress = new_resource.macaddress.gsub(':', '-')
+      cmd << " -IPAddress #{new_resource.ipaddress}"
+      cmd << " -scopeid #{new_resource.scopeid}"
+      cmd << " -clientid #{hwaddress}"
+      #      cmd << " -leaseexpirytime #{new_resource.leaseexpirytime}"
+      #      cmd << " -description #{new_resource.description}"
+      # Optional hash needed
 
-    if new_resource.version == '6'
-      powershell_script "create_DhcpServerv6Lease_#{new_resource.name}" do
-        code cmd
+      if new_resource.version == '6'
+        powershell_script "create_DhcpServerv6Lease_#{new_resource.name}" do
+          code cmd
+        end
+      end
+      if new_resource.version == '4'
+        powershell_script "create_DhcpServerv4Lease_#{new_resource.name}" do
+          code cmd
+        end
       end
     end
-    if new_resource.version == '4'
-      powershell_script "create_DhcpServerv4Lease_#{new_resource.name}" do
-        code cmd
-      end
-    end
-
-    new_resource.updated_by_last_action(true)
-    Chef::Log.info("The lease #{new_resource.name} was created")
   end
 end
 
 action :delete do
   if exists?
-    new_resource.updated_by_last_action(true)
-    Chef::Log.info("The lease #{new_resource.name} was found, deleting")
-    if new_resource.version == '6'
-      cmd = 'Remove-DhcpServerv6lease'
-    end
-    if new_resource.version == '4'
-      cmd = 'Remove-DhcpServerv4lease'
-    end
-    #    cmd << " -scopeid #{new_resource.scopeid}"
-    cmd << " -IPAddress #{new_resource.ipaddress}"
-
-    if new_resource.version == '6'
-      powershell_script "delete_DhcpServerv6lease_#{new_resource.name}" do
-        code cmd
+    converge_by("delete lease #{new_resource.name}") do
+      if new_resource.version == '6'
+        cmd = 'Remove-DhcpServerv6lease'
       end
-    end
-    if new_resource.version == '4'
-      powershell_script "delete_DhcpServerv4lease_#{new_resource.name}" do
-        code cmd
+      if new_resource.version == '4'
+        cmd = 'Remove-DhcpServerv4lease'
+      end
+      #    cmd << " -scopeid #{new_resource.scopeid}"
+      cmd << " -IPAddress #{new_resource.ipaddress}"
+
+      if new_resource.version == '6'
+        powershell_script "delete_DhcpServerv6lease_#{new_resource.name}" do
+          code cmd
+        end
+      end
+      if new_resource.version == '4'
+        powershell_script "delete_DhcpServerv4lease_#{new_resource.name}" do
+          code cmd
+        end
       end
     end
   else
-    new_resource.updated_by_last_action(false)
-    Chef::Log.info("The lease #{new_resource.name} was not found")
+    Chef::Log.debug("The lease #{new_resource.name} was not found")
   end
 end
 

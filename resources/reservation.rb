@@ -59,65 +59,63 @@ property :version, String, default: '4'
 
 action :create do
   if exists?
-    new_resource.updated_by_last_action(false)
-    Chef::Log.info("The reservation #{new_resource.name} already exists")
+    Chef::Log.debug("The reservation #{new_resource.name} already exists")
   else
-    if new_resource.version == '6'
-      cmd = 'Add-DhcpServerv6Reservation'
-    end
-    if new_resource.version == '4'
-      cmd = 'Add-DhcpServerv4Reservation'
-    end
-    # Allow use of : in macmacaddress
-    hwaddress = new_resource.macaddress.gsub(':', '-')
-    cmd << " -scopeid #{new_resource.scopeid}"
-    cmd << " -IPAddress #{new_resource.ipaddress}"
-    cmd << " -clientid #{hwaddress}"
-    cmd << " -name #{new_resource.name}"
-    #      cmd << " -description #{new_resource.description}"
-    # Optional hash needed
+    converge_by("create reservation #{new_resource.name}") do
+      if new_resource.version == '6'
+        cmd = 'Add-DhcpServerv6Reservation'
+      end
+      if new_resource.version == '4'
+        cmd = 'Add-DhcpServerv4Reservation'
+      end
+      # Allow use of : in macmacaddress
+      hwaddress = new_resource.macaddress.gsub(':', '-')
+      cmd << " -scopeid #{new_resource.scopeid}"
+      cmd << " -IPAddress #{new_resource.ipaddress}"
+      cmd << " -clientid #{hwaddress}"
+      cmd << " -name #{new_resource.name}"
+      #      cmd << " -description #{new_resource.description}"
+      # Optional hash needed
 
-    if new_resource.version == '6'
-      powershell_script "create_DhcpServerv6Reservation_#{new_resource.name}" do
-        code cmd
+      if new_resource.version == '6'
+        powershell_script "create_DhcpServerv6Reservation_#{new_resource.name}" do
+          code cmd
+        end
+      end
+      if new_resource.version == '4'
+        powershell_script "create_DhcpServerv4Reservation_#{new_resource.name}" do
+          code cmd
+        end
       end
     end
-    if new_resource.version == '4'
-      powershell_script "create_DhcpServerv4Reservation_#{new_resource.name}" do
-        code cmd
-      end
-    end
-    new_resource.updated_by_last_action(true)
-    Chef::Log.info("The reservation #{new_resource.name} was created")
   end
 end
 
 action :delete do
   if exists?
-    new_resource.updated_by_last_action(true)
-    Chef::Log.info("The reservation #{new_resource.name} was found, deleting")
-    if new_resource.version == '6'
-      cmd = 'Remove-DhcpServerv6Reservation'
-    end
-    if new_resource.version == '4'
-      cmd = 'Remove-DhcpServerv4Reservation'
-    end
-    # Allow use of : in macmacaddress
-    cmd << " -IPAddress #{new_resource.ipaddress}"
-
-    if new_resource.version == '6'
-      powershell_script "delete_DhcpServerv6Reservation_#{new_resource.name}" do
-        code cmd
+    converge_by("delete reserveation #{new_resource.name}") do
+      if new_resource.version == '6'
+        cmd = 'Remove-DhcpServerv6Reservation'
       end
-    end
-    if new_resource.version == '4'
-      powershell_script "delete_DhcpServerv4Reservation_#{new_resource.name}" do
-        code cmd
+      if new_resource.version == '4'
+        cmd = 'Remove-DhcpServerv4Reservation'
+      end
+      # Allow use of : in macmacaddress
+      cmd << " -IPAddress #{new_resource.ipaddress}"
+
+      if new_resource.version == '6'
+        powershell_script "delete_DhcpServerv6Reservation_#{new_resource.name}" do
+          code cmd
+        end
+      end
+      if new_resource.version == '4'
+        powershell_script "delete_DhcpServerv4Reservation_#{new_resource.name}" do
+          code cmd
+        end
       end
     end
   else
-    new_resource.updated_by_last_action(false)
-    Chef::Log.info("The reservation #{new_resource.name} was not found")
+    Chef::Log.debug("The reservation #{new_resource.name} was not found")
   end
 end
 
