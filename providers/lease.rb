@@ -29,38 +29,33 @@ action :create do
     new_resource.updated_by_last_action(false)
     Chef::Log.info("The lease #{new_resource.name} already exists")
   else
-    if node['os_version'] >= '6.2'
-      Chef::Log.debug('Windows Server 2012 Family Detected')
-      if new_resource.version == '6'
-        cmd = 'Add-DhcpServerv6Lease'
-      end
-      if new_resource.version == '4'
-        cmd = 'Add-DhcpServerv4Lease'
-      end
-
-      # Allow use of : in macmacaddress
-      hwaddress = new_resource.macaddress.gsub(':', '-')
-      cmd << " -IPAddress #{new_resource.ipaddress}"
-      cmd << " -scopeid #{new_resource.scopeid}"
-      cmd << " -clientid #{hwaddress}"
-      #      cmd << " -leaseexpirytime #{new_resource.leaseexpirytime}"
-      #      cmd << " -description #{new_resource.description}"
-      # Optional hash needed
-
-      if new_resource.version == '6'
-        powershell_script "create_DhcpServerv6Lease_#{new_resource.name}" do
-          code cmd
-        end
-      end
-      if new_resource.version == '4'
-        powershell_script "create_DhcpServerv4Lease_#{new_resource.name}" do
-          code cmd
-        end
-      end
-    else
-      # Server 2008
-      Chef::Log.debug('Windows Server 2008 Family Detected')
+    if new_resource.version == '6'
+      cmd = 'Add-DhcpServerv6Lease'
     end
+    if new_resource.version == '4'
+      cmd = 'Add-DhcpServerv4Lease'
+    end
+
+    # Allow use of : in macmacaddress
+    hwaddress = new_resource.macaddress.gsub(':', '-')
+    cmd << " -IPAddress #{new_resource.ipaddress}"
+    cmd << " -scopeid #{new_resource.scopeid}"
+    cmd << " -clientid #{hwaddress}"
+    #      cmd << " -leaseexpirytime #{new_resource.leaseexpirytime}"
+    #      cmd << " -description #{new_resource.description}"
+    # Optional hash needed
+
+    if new_resource.version == '6'
+      powershell_script "create_DhcpServerv6Lease_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    if new_resource.version == '4'
+      powershell_script "create_DhcpServerv4Lease_#{new_resource.name}" do
+        code cmd
+      end
+    end
+
     new_resource.updated_by_last_action(true)
     Chef::Log.info("The lease #{new_resource.name} was created")
   end
@@ -70,30 +65,24 @@ action :delete do
   if exists?
     new_resource.updated_by_last_action(true)
     Chef::Log.info("The lease #{new_resource.name} was found, deleting")
-    if node['os_version'] >= '6.2'
-      Chef::Log.debug('Windows Server 2012 Family Detected')
-      if new_resource.version == '6'
-        cmd = 'Remove-DhcpServerv6lease'
-      end
-      if new_resource.version == '4'
-        cmd = 'Remove-DhcpServerv4lease'
-      end
-      #    cmd << " -scopeid #{new_resource.scopeid}"
-      cmd << " -IPAddress #{new_resource.ipaddress}"
+    if new_resource.version == '6'
+      cmd = 'Remove-DhcpServerv6lease'
+    end
+    if new_resource.version == '4'
+      cmd = 'Remove-DhcpServerv4lease'
+    end
+    #    cmd << " -scopeid #{new_resource.scopeid}"
+    cmd << " -IPAddress #{new_resource.ipaddress}"
 
-      if new_resource.version == '6'
-        powershell_script "delete_DhcpServerv6lease_#{new_resource.name}" do
-          code cmd
-        end
+    if new_resource.version == '6'
+      powershell_script "delete_DhcpServerv6lease_#{new_resource.name}" do
+        code cmd
       end
-      if new_resource.version == '4'
-        powershell_script "delete_DhcpServerv4lease_#{new_resource.name}" do
-          code cmd
-        end
+    end
+    if new_resource.version == '4'
+      powershell_script "delete_DhcpServerv4lease_#{new_resource.name}" do
+        code cmd
       end
-    else
-      # Server 2008
-      Chef::Log.debug('Windows Server 2008 Family Detected')
     end
   else
     new_resource.updated_by_last_action(false)
@@ -102,7 +91,6 @@ action :delete do
 end
 
 def exists?
-  #  if node[:os_version] >= "6.2"
   if new_resource.version == '6'
     check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Lease -ipaddress #{new_resource.ipaddress}\"").run_command
     check.stdout.include?(new_resource.ipaddress)
@@ -111,5 +99,4 @@ def exists?
     check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Lease -ipaddress #{new_resource.ipaddress}\"").run_command
     check.stdout.include?(new_resource.ipaddress)
   end
-  #  end
 end
