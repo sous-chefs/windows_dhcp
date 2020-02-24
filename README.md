@@ -7,7 +7,6 @@ This cookbook installs the DHCP on Windows Server including all necessary roles 
 
 ### Platform
 
-* Windows Server 2008 R2 Family
 * Windows Server 2012 Family
 
 ### Cookbooks
