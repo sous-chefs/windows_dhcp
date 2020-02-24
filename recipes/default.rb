@@ -3,6 +3,7 @@
 # Recipe:: default
 #
 # Copyright:: 2014, Texas A&M
+# Copyright:: 2020, Chef Software, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -23,33 +24,23 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-if node['os_version'] >= '6.2'
-  %w(
-    DHCPServer
-    ServerManager-Core-RSAT
-    ServerManager-Core-RSAT-Role-Tools
-    DHCPServer-Tools
-  ).each do |feature|
-    windows_feature feature do
-      action :install
-      all true
-    end
+
+%w(
+  DHCPServer
+  ServerManager-Core-RSAT
+  ServerManager-Core-RSAT-Role-Tools
+  DHCPServer-Tools
+).each do |feature|
+  windows_feature feature do
+    action :install
+    all true
   end
-  powershell_script 'DHCP security groups' do
-    code 'netsh dhcp add securitygroups'
-  end
-  service 'dhcpserver' do
-    action :restart
-  end
-else
-  %w(
-    DHCPServer
-    DHCPServer-Tools
-    DHCPServer-RSATClient-Tools
-  ).each do |feature|
-    windows_feature feature do
-      action :install
-      all true
-    end
-  end
+end
+
+powershell_script 'DHCP security groups' do
+  code 'netsh dhcp add securitygroups'
+end
+
+service 'dhcpserver' do
+  action :restart
 end
