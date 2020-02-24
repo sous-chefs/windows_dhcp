@@ -24,17 +24,13 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-actions :create, :delete
-default_action :create
-
-attribute :name, kind_of: String, name_attribute: true
-attribute :ipaddress, kind_of: String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
-attribute :scopeid, kind_of: String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
-attribute :macaddress, kind_of: String, required: true
-attribute :leaseexpirytime, kind_of: String # Regex for YYYY-MM-DD HH:MM:SS?
-attribute :description, kind_of: String
-attribute :version, kind_of: String, default: '4'
-attribute :computername, kind_of: String
+property :ipaddress, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
+property :scopeid, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
+property :macaddress, String, required: true
+property :leaseexpirytime, String # Regex for YYYY-MM-DD HH:MM:SS?
+property :description, String
+property :version, String, default: '4'
+property :computername, String
 
 #  Optional params shared
 #    AsJob
@@ -59,3 +55,82 @@ attribute :computername, kind_of: String
 #    Addresstype: string IANA IATA
 #    ClientDuid: string
 #    iaid: int32
+
+action :create do
+  if exists?
+    new_resource.updated_by_last_action(false)
+    Chef::Log.info("The lease #{new_resource.name} already exists")
+  else
+    if new_resource.version == '6'
+      cmd = 'Add-DhcpServerv6Lease'
+    end
+    if new_resource.version == '4'
+      cmd = 'Add-DhcpServerv4Lease'
+    end
+
+    # Allow use of : in macmacaddress
+    hwaddress = new_resource.macaddress.gsub(':', '-')
+    cmd << " -IPAddress #{new_resource.ipaddress}"
+    cmd << " -scopeid #{new_resource.scopeid}"
+    cmd << " -clientid #{hwaddress}"
+    #      cmd << " -leaseexpirytime #{new_resource.leaseexpirytime}"
+    #      cmd << " -description #{new_resource.description}"
+    # Optional hash needed
+
+    if new_resource.version == '6'
+      powershell_script "create_DhcpServerv6Lease_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    if new_resource.version == '4'
+      powershell_script "create_DhcpServerv4Lease_#{new_resource.name}" do
+        code cmd
+      end
+    end
+
+    new_resource.updated_by_last_action(true)
+    Chef::Log.info("The lease #{new_resource.name} was created")
+  end
+end
+
+action :delete do
+  if exists?
+    new_resource.updated_by_last_action(true)
+    Chef::Log.info("The lease #{new_resource.name} was found, deleting")
+    if new_resource.version == '6'
+      cmd = 'Remove-DhcpServerv6lease'
+    end
+    if new_resource.version == '4'
+      cmd = 'Remove-DhcpServerv4lease'
+    end
+    #    cmd << " -scopeid #{new_resource.scopeid}"
+    cmd << " -IPAddress #{new_resource.ipaddress}"
+
+    if new_resource.version == '6'
+      powershell_script "delete_DhcpServerv6lease_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    if new_resource.version == '4'
+      powershell_script "delete_DhcpServerv4lease_#{new_resource.name}" do
+        code cmd
+      end
+    end
+  else
+    new_resource.updated_by_last_action(false)
+    Chef::Log.info("The lease #{new_resource.name} was not found")
+  end
+end
+
+action_class do
+  def exists?
+    if new_resource.version == '6'
+      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Lease -ipaddress #{new_resource.ipaddress}\"").run_command
+      check.stdout.include?(new_resource.ipaddress)
+    end
+    if new_resource.version == '4'
+      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Lease -ipaddress #{new_resource.ipaddress}\"").run_command
+      check.stdout.include?(new_resource.ipaddress)
+    end
+  end
+end

@@ -24,16 +24,12 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-actions :create, :delete, :update
-default_action :create
-
-attribute :name, kind_of: String, name_attribute: true
-attribute :scopeid, kind_of: String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
-attribute :ipaddress, kind_of: String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
-attribute :macaddress, kind_of: String, required: true
-attribute :computername, kind_of: String
-attribute :description, kind_of: String
-attribute :version, kind_of: String, default: '4'
+property :scopeid, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
+property :ipaddress, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
+property :macaddress, String, required: true
+property :computername, String
+property :description, String
+property :version, String, default: '4'
 
 #  Optional params shared
 #    AsJob
@@ -60,3 +56,106 @@ attribute :version, kind_of: String, default: '4'
 #    T1:
 #    T2:
 #    ValidLifeTime:
+
+action :create do
+  if exists?
+    new_resource.updated_by_last_action(false)
+    Chef::Log.info("The reservation #{new_resource.name} already exists")
+  else
+    if new_resource.version == '6'
+      cmd = 'Add-DhcpServerv6Reservation'
+    end
+    if new_resource.version == '4'
+      cmd = 'Add-DhcpServerv4Reservation'
+    end
+    # Allow use of : in macmacaddress
+    hwaddress = new_resource.macaddress.gsub(':', '-')
+    cmd << " -scopeid #{new_resource.scopeid}"
+    cmd << " -IPAddress #{new_resource.ipaddress}"
+    cmd << " -clientid #{hwaddress}"
+    cmd << " -name #{new_resource.name}"
+    #      cmd << " -description #{new_resource.description}"
+    # Optional hash needed
+
+    if new_resource.version == '6'
+      powershell_script "create_DhcpServerv6Reservation_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    if new_resource.version == '4'
+      powershell_script "create_DhcpServerv4Reservation_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    new_resource.updated_by_last_action(true)
+    Chef::Log.info("The reservation #{new_resource.name} was created")
+  end
+end
+
+action :delete do
+  if exists?
+    new_resource.updated_by_last_action(true)
+    Chef::Log.info("The reservation #{new_resource.name} was found, deleting")
+    if new_resource.version == '6'
+      cmd = 'Remove-DhcpServerv6Reservation'
+    end
+    if new_resource.version == '4'
+      cmd = 'Remove-DhcpServerv4Reservation'
+    end
+    # Allow use of : in macmacaddress
+    cmd << " -IPAddress #{new_resource.ipaddress}"
+
+    if new_resource.version == '6'
+      powershell_script "delete_DhcpServerv6Reservation_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    if new_resource.version == '4'
+      powershell_script "delete_DhcpServerv4Reservation_#{new_resource.name}" do
+        code cmd
+      end
+    end
+  else
+    new_resource.updated_by_last_action(false)
+    Chef::Log.info("The reservation #{new_resource.name} was not found")
+  end
+end
+
+action :update do
+  if exists?
+    if new_resource.version == '6'
+      cmd = 'Set-DhcpServerv6Reservation'
+    elsif new_resource.version == '4'
+      cmd = 'Set-DhcpServerv4Reservation'
+    else
+      Chef::Log.error("DHCP version must be '4' or '6'")
+    end
+    hwaddress = new_resource.macaddress.gsub(':', '-')
+    cmd << " -IPAddress #{new_resource.ipaddress}"
+    cmd << " -clientid #{hwaddress}"
+    cmd << " -name #{new_resource.name}"
+    if new_resource.version == '6'
+      powershell_script "update_DhcpServerv6Reservation_#{new_resource.name}" do
+        code cmd
+      end
+    end
+    if new_resource.version == '4'
+      powershell_script "update_DhcpServerv4Reservation_#{new_resource.name}" do
+        code cmd
+      end
+    end
+  end
+end
+
+action_class do
+  def exists?
+    if new_resource.version == '6'
+      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Reservation -scopeid #{new_resource.scopeid}\"").run_command
+      check.stdout.include?(new_resource.name)
+    end
+    if new_resource.version == '4'
+      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Reservation -scopeid #{new_resource.scopeid}\"").run_command
+      check.stdout.include?(new_resource.name)
+    end
+  end
+end
