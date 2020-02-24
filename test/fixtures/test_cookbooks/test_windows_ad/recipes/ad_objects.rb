@@ -25,7 +25,7 @@ windows_ad_user 'User1' do
   domain_name domain
   ou 'Users'
   options ({
-    'pwd' => pass
+    'pwd' => pass,
   })
   action :create
 end
@@ -34,7 +34,7 @@ windows_ad_user 'User2' do
   domain_name domain
   ou 'Users'
   options ({
-    'pwd' => pass
+    'pwd' => pass,
   })
   action :create
 end
