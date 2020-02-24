@@ -24,6 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+property :reservation_name, String, name_property: true
 property :scopeid, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
 property :ipaddress, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
 property :macaddress, String, required: true
@@ -59,9 +60,9 @@ property :version, String, default: '4'
 
 action :create do
   if exists?
-    Chef::Log.debug("The reservation #{new_resource.name} already exists")
+    Chef::Log.debug("The reservation #{new_resource.reservation_name} already exists")
   else
-    converge_by("create reservation #{new_resource.name}") do
+    converge_by("create reservation #{new_resource.reservation_name}") do
       if new_resource.version == '6'
         cmd = 'Add-DhcpServerv6Reservation'
       end
@@ -73,17 +74,17 @@ action :create do
       cmd << " -scopeid #{new_resource.scopeid}"
       cmd << " -IPAddress #{new_resource.ipaddress}"
       cmd << " -clientid #{hwaddress}"
-      cmd << " -name #{new_resource.name}"
+      cmd << " -name #{new_resource.reservation_name}"
       #      cmd << " -description #{new_resource.description}"
       # Optional hash needed
 
       if new_resource.version == '6'
-        powershell_script "create_DhcpServerv6Reservation_#{new_resource.name}" do
+        powershell_script "create_DhcpServerv6Reservation_#{new_resource.reservation_name}" do
           code cmd
         end
       end
       if new_resource.version == '4'
-        powershell_script "create_DhcpServerv4Reservation_#{new_resource.name}" do
+        powershell_script "create_DhcpServerv4Reservation_#{new_resource.reservation_name}" do
           code cmd
         end
       end
@@ -93,7 +94,7 @@ end
 
 action :delete do
   if exists?
-    converge_by("delete reserveation #{new_resource.name}") do
+    converge_by("delete reserveation #{new_resource.reservation_name}") do
       if new_resource.version == '6'
         cmd = 'Remove-DhcpServerv6Reservation'
       end
@@ -104,18 +105,18 @@ action :delete do
       cmd << " -IPAddress #{new_resource.ipaddress}"
 
       if new_resource.version == '6'
-        powershell_script "delete_DhcpServerv6Reservation_#{new_resource.name}" do
+        powershell_script "delete_DhcpServerv6Reservation_#{new_resource.reservation_name}" do
           code cmd
         end
       end
       if new_resource.version == '4'
-        powershell_script "delete_DhcpServerv4Reservation_#{new_resource.name}" do
+        powershell_script "delete_DhcpServerv4Reservation_#{new_resource.reservation_name}" do
           code cmd
         end
       end
     end
   else
-    Chef::Log.debug("The reservation #{new_resource.name} was not found")
+    Chef::Log.debug("The reservation #{new_resource.reservation_name} was not found")
   end
 end
 
@@ -131,14 +132,14 @@ action :update do
     hwaddress = new_resource.macaddress.gsub(':', '-')
     cmd << " -IPAddress #{new_resource.ipaddress}"
     cmd << " -clientid #{hwaddress}"
-    cmd << " -name #{new_resource.name}"
+    cmd << " -name #{new_resource.reservation_name}"
     if new_resource.version == '6'
-      powershell_script "update_DhcpServerv6Reservation_#{new_resource.name}" do
+      powershell_script "update_DhcpServerv6Reservation_#{new_resource.reservation_name}" do
         code cmd
       end
     end
     if new_resource.version == '4'
-      powershell_script "update_DhcpServerv4Reservation_#{new_resource.name}" do
+      powershell_script "update_DhcpServerv4Reservation_#{new_resource.reservation_name}" do
         code cmd
       end
     end
@@ -149,11 +150,11 @@ action_class do
   def exists?
     if new_resource.version == '6'
       check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Reservation -scopeid #{new_resource.scopeid}\"").run_command
-      check.stdout.include?(new_resource.name)
+      check.stdout.include?(new_resource.reservation_name)
     end
     if new_resource.version == '4'
       check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Reservation -scopeid #{new_resource.scopeid}\"").run_command
-      check.stdout.include?(new_resource.name)
+      check.stdout.include?(new_resource.reservation_name)
     end
   end
 end

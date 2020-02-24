@@ -24,6 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+property :lease_name, String, name_property: true
 property :ipaddress, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
 property :scopeid, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), required: true
 property :macaddress, String, required: true
@@ -58,9 +59,9 @@ property :computername, String
 
 action :create do
   if exists?
-    Chef::Log.debug("The lease #{new_resource.name} already exists")
+    Chef::Log.debug("The lease #{new_resource.lease_name} already exists")
   else
-    converge_by "create lease #{new_resource.name}" do
+    converge_by "create lease #{new_resource.lease_name}" do
       if new_resource.version == '6'
         cmd = 'Add-DhcpServerv6Lease'
       end
@@ -78,12 +79,12 @@ action :create do
       # Optional hash needed
 
       if new_resource.version == '6'
-        powershell_script "create_DhcpServerv6Lease_#{new_resource.name}" do
+        powershell_script "create_DhcpServerv6Lease_#{new_resource.lease_name}" do
           code cmd
         end
       end
       if new_resource.version == '4'
-        powershell_script "create_DhcpServerv4Lease_#{new_resource.name}" do
+        powershell_script "create_DhcpServerv4Lease_#{new_resource.lease_name}" do
           code cmd
         end
       end
@@ -93,7 +94,7 @@ end
 
 action :delete do
   if exists?
-    converge_by("delete lease #{new_resource.name}") do
+    converge_by("delete lease #{new_resource.lease_name}") do
       if new_resource.version == '6'
         cmd = 'Remove-DhcpServerv6lease'
       end
@@ -104,18 +105,18 @@ action :delete do
       cmd << " -IPAddress #{new_resource.ipaddress}"
 
       if new_resource.version == '6'
-        powershell_script "delete_DhcpServerv6lease_#{new_resource.name}" do
+        powershell_script "delete_DhcpServerv6lease_#{new_resource.lease_name}" do
           code cmd
         end
       end
       if new_resource.version == '4'
-        powershell_script "delete_DhcpServerv4lease_#{new_resource.name}" do
+        powershell_script "delete_DhcpServerv4lease_#{new_resource.lease_name}" do
           code cmd
         end
       end
     end
   else
-    Chef::Log.debug("The lease #{new_resource.name} was not found")
+    Chef::Log.debug("The lease #{new_resource.lease_name} was not found")
   end
 end
 

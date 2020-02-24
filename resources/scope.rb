@@ -24,6 +24,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+property :scope_name, String, name_property: true
 property :startrange, String, regex: Resolv::IPv4::Regex
 property :endrange, String, regex: Resolv::IPv4::Regex
 property :subnetmask, String, regex: Resolv::IPv4::Regex
@@ -85,9 +86,9 @@ property :scopeid, String, regex: (Resolv::IPv4::Regex || Resolv::IPv6::Regex), 
 
 action :create do
   if exists?
-    Chef::Log.debug("The scope #{new_resource.name} #{new_resource.scopeid} already exists")
+    Chef::Log.debug("The scope #{new_resource.scope_name} #{new_resource.scopeid} already exists")
   else
-    converge_by("create scope #{new_resource.name}") do
+    converge_by("create scope #{new_resource.scope_name}") do
       # Required: Startrange, Endrange, subnetmask, name
       if new_resource.version == '6'
         cmd = 'Add-DhcpServerv6Scope'
@@ -98,17 +99,17 @@ action :create do
 
       cmd << " -StartRange #{new_resource.startrange}"
       cmd << " -EndRange #{new_resource.endrange}"
-      cmd << " -Name \"#{new_resource.name}\""
+      cmd << " -Name \"#{new_resource.scope_name}\""
       cmd << " -SubnetMask #{new_resource.subnetmask}"
       # Optional hash needed
 
       if new_resource.version == '6'
-        powershell_script "create_DhcpServerv6Scope_#{new_resource.name}" do
+        powershell_script "create_DhcpServerv6Scope_#{new_resource.scope_name}" do
           code cmd
         end
       end
       if new_resource.version == '4'
-        powershell_script "create_DhcpServerv4Scope_#{new_resource.name}" do
+        powershell_script "create_DhcpServerv4Scope_#{new_resource.scope_name}" do
           code cmd
         end
       end
@@ -118,7 +119,7 @@ end
 
 action :delete do
   if exists?
-    converge_by("delete scope #{new_resource.name}") do
+    converge_by("delete scope #{new_resource.scope_name}") do
       if new_resource.version == '6'
         cmd = 'Remove-DhcpServerv6Scope'
       end
@@ -130,18 +131,18 @@ action :delete do
       # Optional hash needed
 
       if new_resource.version == '6'
-        powershell_script "delete_DhcpServerv6Scope_#{new_resource.name}" do
+        powershell_script "delete_DhcpServerv6Scope_#{new_resource.scope_name}" do
           code cmd
         end
       end
       if new_resource.version == '4'
-        powershell_script "delete_DhcpServerv4Scope_#{new_resource.name}" do
+        powershell_script "delete_DhcpServerv4Scope_#{new_resource.scope_name}" do
           code cmd
         end
       end
     end
   else
-    Chef::Log.debug("The scope #{new_resource.name} #{new_resource.scopeid} was not found")
+    Chef::Log.debug("The scope #{new_resource.scope_name} #{new_resource.scopeid} was not found")
   end
 end
 

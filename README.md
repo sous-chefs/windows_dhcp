@@ -40,7 +40,7 @@ Just include `windows_dhcp` in your node's `run_list`:
 
 #### Properties
 
-* `name`: name attribute. Name of the lease entry.
+* `lease_name`: Optional name property used if you want to give a friendly name to the resource block. This is the name of the lease entry.
 * `comptername`: Name of the DHCP server.
 * `description`: Description field entry.
 * `ipaddress`: IPv4 or IPv6 address or the lease entry. **Required** Regex: IPv4 or IPv6
@@ -70,7 +70,7 @@ Just include `windows_dhcp` in your node's `run_list`:
 
 #### Properties
 
-* `name`: name attribute. Name of the reservation entry.
+* `reservation_name`: Optional name property used if you want to give a friendly name to the resource block. This is the name of the reservation entry.
 * `comptername`: Name of the DHCP server.
 * `description`: Description field entry.
 * `ipaddress`: IPv4 or IPv6 address or the reservation entry. **Required** Regex: IPv4 or IPv6
@@ -114,7 +114,7 @@ Just include `windows_dhcp` in your node's `run_list`:
 
 #### Properties
 
-* `name`: name attribute.  Name of the scope entry.
+* `scope_name`: Optional name property used if you want to give a friendly name to the resource block. This is the name of the scope entry.
 * `computername`: Name of the DHCP server.
 * `description`: Description field entry.
 * `endrange`: Ending IP of the scope. Regex: IPv4 or IPv6
