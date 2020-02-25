@@ -103,16 +103,7 @@ action :create do
       cmd << " -SubnetMask #{new_resource.subnetmask}"
       # Optional hash needed
 
-      if new_resource.version == '6'
-        powershell_script "create_DhcpServerv6Scope_#{new_resource.scope_name}" do
-          code cmd
-        end
-      end
-      if new_resource.version == '4'
-        powershell_script "create_DhcpServerv4Scope_#{new_resource.scope_name}" do
-          code cmd
-        end
-      end
+      powershell_out!(cmd).run_command
     end
   end
 end
@@ -130,16 +121,7 @@ action :delete do
       cmd << " -scopeid \"#{new_resource.scopeid}\""
       # Optional hash needed
 
-      if new_resource.version == '6'
-        powershell_script "delete_DhcpServerv6Scope_#{new_resource.scope_name}" do
-          code cmd
-        end
-      end
-      if new_resource.version == '4'
-        powershell_script "delete_DhcpServerv4Scope_#{new_resource.scope_name}" do
-          code cmd
-        end
-      end
+      powershell_out!(cmd).run_command
     end
   else
     Chef::Log.debug("The scope #{new_resource.scope_name} #{new_resource.scopeid} was not found")
@@ -149,11 +131,11 @@ end
 action_class do
   def exists?
     if new_resource.version == '6'
-      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Scope -scopeid #{new_resource.scopeid}\"").run_command
+      check = powershell_out("Get-DhcpServerv6Scope -scopeid #{new_resource.scopeid}").run_command
       check.stdout.include?(new_resource.scopeid)
     end
     if new_resource.version == '4'
-      check = Mixlib::ShellOut.new('powershell.exe "Get-DhcpServerv4Scope | fl scopeid"').run_command
+      check = powershell_out('Get-DhcpServerv4Scope | fl scopeid').run_command
       check.stdout.include?(new_resource.scopeid)
     end
   end

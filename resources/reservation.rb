@@ -78,16 +78,7 @@ action :create do
       #      cmd << " -description #{new_resource.description}"
       # Optional hash needed
 
-      if new_resource.version == '6'
-        powershell_script "create_DhcpServerv6Reservation_#{new_resource.reservation_name}" do
-          code cmd
-        end
-      end
-      if new_resource.version == '4'
-        powershell_script "create_DhcpServerv4Reservation_#{new_resource.reservation_name}" do
-          code cmd
-        end
-      end
+      powershell_out!(cmd).run_command
     end
   end
 end
@@ -104,16 +95,7 @@ action :delete do
       # Allow use of : in macmacaddress
       cmd << " -IPAddress #{new_resource.ipaddress}"
 
-      if new_resource.version == '6'
-        powershell_script "delete_DhcpServerv6Reservation_#{new_resource.reservation_name}" do
-          code cmd
-        end
-      end
-      if new_resource.version == '4'
-        powershell_script "delete_DhcpServerv4Reservation_#{new_resource.reservation_name}" do
-          code cmd
-        end
-      end
+      powershell_out!(cmd).run_command
     end
   else
     Chef::Log.debug("The reservation #{new_resource.reservation_name} was not found")
@@ -149,11 +131,11 @@ end
 action_class do
   def exists?
     if new_resource.version == '6'
-      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv6Reservation -scopeid #{new_resource.scopeid}\"").run_command
+      check = powershell_out("Get-DhcpServerv6Reservation -scopeid #{new_resource.scopeid}").run_command
       check.stdout.include?(new_resource.reservation_name)
     end
     if new_resource.version == '4'
-      check = Mixlib::ShellOut.new("powershell.exe \"Get-DhcpServerv4Reservation -scopeid #{new_resource.scopeid}\"").run_command
+      check = powershell_out("Get-DhcpServerv4Reservation -scopeid #{new_resource.scopeid}").run_command
       check.stdout.include?(new_resource.reservation_name)
     end
   end
