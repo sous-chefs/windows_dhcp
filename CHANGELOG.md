@@ -5,6 +5,10 @@ This file is used to list changes made in each version of the windows_dhcp cookb
 ## Unreleased
 
 * Transfer ownership to sous-chefs
+* Remove dependency on Windows cookbook
+* update OS platforms - remove windows 2008r2
+* update cookbook to current framework
+* remove providers
 
 ## 0.2.0
 
