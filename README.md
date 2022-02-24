@@ -1,5 +1,4 @@
 # windows_dhcp Cookbook
-[![Join the chat at https://gitter.im/sous-chefs/windows_dhcp](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sous-chefs/windows_dhcp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This cookbook installs the DHCP on Windows Server including all necessary roles and features.
 
@@ -12,7 +11,7 @@ This cookbook installs the DHCP on Windows Server including all necessary roles 
 
 ### Cookbooks
 
-* windows - Official windows cookbook from Chef Software: https://supermarket.chef.io/cookbooks/windows
+* none
 
 ## Usage
 
@@ -140,10 +139,10 @@ Just include `windows_dhcp` in your node's `run_list`:
 ## Contributing
 
 1. Fork the repository on Github
-2. Write your change
-3. Write tests for your change (if applicable)
-4. Run the tests, ensuring they all pass
-5. Submit a Pull Request using GitHub
+1. Write your change
+1. Write tests for your change (if applicable)
+1. Run the tests, ensuring they all pass
+1. Submit a Pull Request using GitHub
 
 ## License and Authors
 

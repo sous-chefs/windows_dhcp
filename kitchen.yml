@@ -1,0 +1,39 @@
+---
+driver:
+  name: vagrant
+  customize:
+    cpus: 2
+    memory: 4096
+
+transport:
+  name: winrm
+  elevated: true
+
+provisioner:
+  name: chef_zero
+  deprecations_as_errors: true
+  chef_license: accept-no-persist
+
+verifier:
+  name: inspec
+
+platforms:
+  - name: windows-2012r2
+    driver:
+      box: tas50/windows_2012r2
+  - name: windows-2016
+    driver:
+      box: tas50/windows_2016
+  - name: windows-2019
+    driver:
+      box: tas50/windows_2019
+
+suites:
+  - name: default
+    data_bags_path: "test/fixtures/data_bags"
+    run_list:
+      - recipe[windows_dhcp::default]
+      - recipe[test_windows_dhcp::scopes]
+      - recipe[test_windows_dhcp::leases]
+      - recipe[test_windows_dhcp::reservations]
+      - recipe[test_windows_dhcp::data_bag]

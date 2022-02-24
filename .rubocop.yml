@@ -1,15 +1,11 @@
-ChefCorrectness/ResourceSetsNameProperty:
-  Exclude:
-    - 'test/fixtures/test_cookbooks/test_windows_dhcp/recipes/data_bag.rb'
+---
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
 Lint/ParenthesesAsGroupedExpression:
   Exclude:
     - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/ad_objects.rb'
     - 'test/fixtures/test_cookbooks/test_windows_ad/recipes/setup_dc.rb'
-
-Lint/UselessAssignment:
-  Exclude:
-    - 'Vagrantfile'
 
 Style/ClassVars:
   Exclude:

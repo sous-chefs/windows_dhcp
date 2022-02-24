@@ -1,1 +1,0 @@
-default: This corresponds exactly to the Suite name we set up in the .kitchen.yml file. If we had a suite called "server-only", then you would put tests for the server only suite under test/integration/server-only.
