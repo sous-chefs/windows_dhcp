@@ -4,7 +4,7 @@ name: ci
 "on":
   pull_request:
   push:
-    branches: [sous-chefs]
+    branches: [main]
 
 jobs:
   lint-unit:
@@ -30,7 +30,7 @@ jobs:
         uses: actionshub/test-kitchen@main
         env:
           CHEF_LICENSE: accept-no-persist
-          KITCHEN_LOCAL_YAML: kitchen.exec.yml
+          KITCHEN_LOCAL_YAML: kitchen_exec.yml
           # ACTIONS_ALLOW_UNSECURE_COMMANDS: true  # allow path editing
         with:
           suite: ${{ matrix.suite }}
