@@ -1,9 +1,10 @@
 name             'windows_dhcp'
-maintainer       'Texas A&M'
-maintainer_email 'dgroh@arch.tamu.edu'
+maintainer       'Sous Chefs'
+maintainer_email 'help@sous-chefs.org'
 license          'MIT'
 description      'Installs/Configures windows_dhcp'
-long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '0.2.0'
-supports         'windows', ">= 6.1"
-depends          'windows'
+source_url       'https://github.com/sous-chefs/windows_dhcp'
+issues_url       'https://github.com/sous-chefs/windows_dhcp/issues'
+supports         'windows', '>= 6.2'
+chef_version     '> 14'

@@ -1,9 +1,8 @@
 #
 # Cookbook:: windows_dhcp
-# Recipe:: default
+# Recipe:: reservations
 #
 # Copyright:: 2014, Texas A&M
-# Copyright:: 2020, Chef Software, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -24,19 +23,18 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-
-windows_feature %w(DHCPServer
-                   ServerManager-Core-RSAT
-                   ServerManager-Core-RSAT-Role-Tools
-                   DHCPServer-Tools) do
-  action :install
-  all true
+windows_dhcp_reservation 'Workstation2' do
+  scopeid '10.0.0.0'
+  ipaddress '10.0.0.2'
+  macaddress '00:00:00:00:00:00'
+  computername 'Workstation2'
+  action :create
 end
 
-execute 'DHCP security groups' do
-  command 'netsh dhcp add securitygroups'
-end
-
-service 'dhcpserver' do
-  action :restart
+windows_dhcp_reservation 'Workstation2' do
+  scopeid '10.0.0.0'
+  ipaddress '10.0.0.2'
+  macaddress '00:00:00:00:00:00'
+  computername 'Workstation2'
+  action :delete
 end

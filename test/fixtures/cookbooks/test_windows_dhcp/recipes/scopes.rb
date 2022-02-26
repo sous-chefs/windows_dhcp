@@ -1,9 +1,8 @@
 #
 # Cookbook:: windows_dhcp
-# Recipe:: default
+# Recipe:: scopes
 #
 # Copyright:: 2014, Texas A&M
-# Copyright:: 2020, Chef Software, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -25,18 +24,36 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-windows_feature %w(DHCPServer
-                   ServerManager-Core-RSAT
-                   ServerManager-Core-RSAT-Role-Tools
-                   DHCPServer-Tools) do
-  action :install
-  all true
+windows_dhcp_scope 'Test' do
+  scopeid '10.0.0.0'
+  startrange '10.0.0.1'
+  endrange '10.0.0.254'
+  subnetmask '255.255.255.0'
+  action :create
 end
 
-execute 'DHCP security groups' do
-  command 'netsh dhcp add securitygroups'
+windows_dhcp_scope 'Test-Copy' do
+  scopeid '10.0.0.0'
+  startrange '10.0.0.1'
+  endrange '10.0.0.254'
+  subnetmask '255.255.255.0'
+  action :create
 end
 
-service 'dhcpserver' do
-  action :restart
+windows_dhcp_scope 'Test1' do
+  scopeid '10.0.10.0'
+  startrange '10.0.10.1'
+  endrange '10.0.10.254'
+  subnetmask '255.255.255.0'
+  action :create
+end
+
+windows_dhcp_scope 'Test1' do
+  scopeid '10.0.10.0'
+  action :delete
+end
+
+windows_dhcp_scope 'Test2' do
+  scopeid '10.0.20.0'
+  action :delete
 end
