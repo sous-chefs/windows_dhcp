@@ -26,8 +26,8 @@ machines = {
       'recipe[test_windows_dhcp::scopes]',
       'recipe[test_windows_dhcp::leases]',
       'recipe[test_windows_dhcp::reservations]',
-      'recipe[test_windows_dhcp::data_bag]'       
-      ]
+      'recipe[test_windows_dhcp::data_bag]',
+      ],
   },
   'win2012' => {
     'hostname'   => 'win2012',
@@ -41,8 +41,8 @@ machines = {
       'recipe[test_windows_dhcp::scopes]',
       'recipe[test_windows_dhcp::leases]',
       'recipe[test_windows_dhcp::reservations]',
-      'recipe[test_windows_dhcp::data_bag]'              
-      ]
+      'recipe[test_windows_dhcp::data_bag]',
+      ],
   },
   'win2012r2' => {
     'hostname'   => 'win2012r2',
@@ -56,8 +56,8 @@ machines = {
       'recipe[test_windows_dhcp::scopes]',
       'recipe[test_windows_dhcp::leases]',
       'recipe[test_windows_dhcp::reservations]',
-      'recipe[test_windows_dhcp::data_bag]'
-      ]
+      'recipe[test_windows_dhcp::data_bag]',
+      ],
   },
   'win2012r2core' => {
     'hostname'   => 'win2012r2core',
@@ -71,13 +71,13 @@ machines = {
       'recipe[test_windows_dhcp::scopes]',
       'recipe[test_windows_dhcp::leases]',
       'recipe[test_windows_dhcp::reservations]',
-      'recipe[test_windows_dhcp::data_bag]'
-      ]
+      'recipe[test_windows_dhcp::data_bag]',
+      ],
   },
 }
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
   machines.each_pair do |name, options|
@@ -86,43 +86,43 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |global_config|
       # Every Vagrant virtual environment requires a box to build off of.
       config.vm.box                        = options['box']
       config.vm.box_url                    = options['box_url']
-	  config.vm.hostname                   = options['hostname']
-	  
+      config.vm.hostname = options['hostname']
+
       config.vm.communicator = 'winrm'
       config.vm.guest = :windows
 
-      port_80   = 1024 + rand(1024)
+      port_80 = 1024 + rand(1024)
       # port_5985 = 1024 + rand(1024)
       # while port_5985 == port_80 do
       #   port_5985 = 1024 + rand(1024)
       # end
-	  
-	  config.vm.network :forwarded_port, guest: 80, host: options['http_port'], id: "http", auto_correct: true
-      config.vm.network :forwarded_port, guest: 3389, host: options['rdp_port'], id: "rdp", auto_correct: true
-	  config.vm.network :forwarded_port, guest: 5985, host: options['winrm_port'], id: "winrm", auto_correct: true
-	  
+
+      config.vm.network :forwarded_port, guest: 80, host: options['http_port'], id: 'http', auto_correct: true
+      config.vm.network :forwarded_port, guest: 3389, host: options['rdp_port'], id: 'rdp', auto_correct: true
+      config.vm.network :forwarded_port, guest: 5985, host: options['winrm_port'], id: 'winrm', auto_correct: true
+
       config.vm.network 'private_network', ip: options['ip'], virtualbox__intnet: 'windows_ad'
       config.vm.provider 'virtualbox' do |vb|
-      #  vb.gui = true
-        vb.customize ['modifyvm', :id, "--nicpromisc1", "allow-all" ]
-        vb.customize ['modifyvm', :id, "--nicpromisc2", "allow-all" ]
+        #  vb.gui = true
+        vb.customize ['modifyvm', :id, '--nicpromisc1', 'allow-all' ]
+        vb.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all' ]
         #  vb.customize ['modifyvm', :id, "--natdnshostresolver1", "on" ]
         #  vb.customize ['modifyvm', :id, "--natdnsproxy1", "on" ]
-     end
+      end
 
-     config.omnibus.chef_version = :latest
+      config.omnibus.chef_version = :latest
 
-#      config.vm.provision 'chef_client', run: 'always' do |chef|
-     config.vm.provision 'chef_solo', run: 'always' do |chef|
-       chef.log_level  = 'debug'
-       chef.cookbooks_path = "../../cookbooks" 
-#      chef.custom_config_path = 'Vagrantfile.chef'
-       chef.file_cache_path    = 'c:/var/chef/cache'
-       chef.data_bags_path = '../../cookbooks/windows_dhcp/files/default/data_bags'
-       chef.run_list = options['run_list']
+      #      config.vm.provision 'chef_client', run: 'always' do |chef|
+      config.vm.provision 'chef_solo', run: 'always' do |chef|
+        chef.log_level = 'debug'
+        chef.cookbooks_path = '../../cookbooks'
+        #      chef.custom_config_path = 'Vagrantfile.chef'
+        chef.file_cache_path = 'c:/var/chef/cache'
+        chef.data_bags_path = '../../cookbooks/windows_dhcp/files/default/data_bags'
+        chef.run_list = options['run_list']
 
-       # You may also specify custom JSON attributes:
-        chef.json = { }
+        # You may also specify custom JSON attributes:
+        chef.json = {}
       end
     end
   end
