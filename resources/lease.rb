@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: windows_dhcp
+# Cookbook:: windows_dhcp
 # Resource:: lease
 #
-# Copyright 2014, Texas A&M
+# Copyright:: 2014, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,14 +27,13 @@
 actions :create, :delete
 default_action :create
 
-attribute :name, :kind_of => String, :name_attribute => true
-attribute :ipaddress, :kind_of => String, :regex => (Resolv::IPv4::Regex or Resolv::IPv6::Regex), :required => true
-attribute :scopeid, :kind_of => String, :regex => (Resolv::IPv4::Regex or Resolv::IPv6::Regex), :required => true
-attribute :macaddress, :kind_of => String, :required => true
-attribute :leaseexpirytime, :kind_of => String #Regex for YYYY-MM-DD HH:MM:SS?
-attribute :description, :kind_of => String
-attribute :version, :kind_of => String, :default => '4'
-attribute :computername, :kind_of => String
+attribute :ipaddress, kind_of: String, regex: (Resolv::IPv4::Regex or Resolv::IPv6::Regex), required: true
+attribute :scopeid, kind_of: String, regex: (Resolv::IPv4::Regex or Resolv::IPv6::Regex), required: true
+attribute :macaddress, kind_of: String, required: true
+attribute :leaseexpirytime, kind_of: String # Regex for YYYY-MM-DD HH:MM:SS?
+attribute :description, kind_of: String
+attribute :version, kind_of: String, default: '4'
+attribute :computername, kind_of: String
 
 #  Optional params shared
 #    AsJob
@@ -59,4 +58,3 @@ attribute :computername, :kind_of => String
 #    Addresstype: string IANA IATA
 #    ClientDuid: string
 #    iaid: int32
-

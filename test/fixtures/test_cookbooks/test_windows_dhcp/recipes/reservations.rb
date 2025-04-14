@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: windows_dhcp
+# Cookbook:: windows_dhcp
 # Recipe:: reservations
 #
-# Copyright 2014, Texas A&M
+# Copyright:: 2014, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -36,5 +36,5 @@ windows_dhcp_reservation 'Workstation2' do
   ipaddress '10.0.0.2'
   macaddress '00:00:00:00:00:00'
   computername 'Workstation2'
-  action :delete 
+  action :delete
 end

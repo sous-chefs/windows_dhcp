@@ -3,9 +3,8 @@ scopes = data_bag('scopes')
 Chef::Log.error('Data bag cannot be empty') if scopes.empty?
 
 scopes.each do |scope|
-
   scope_info = data_bag_item('scopes', scope)
-  
+
   windows_dhcp_scope(scope) do
     action [:create]
     name scope_info['id']
@@ -16,7 +15,7 @@ scopes.each do |scope|
   end
 
   hosts = scope_info['hosts']
-  
+
   hosts.each do |host, option|
     windows_dhcp_reservation host do
       action [:create]
