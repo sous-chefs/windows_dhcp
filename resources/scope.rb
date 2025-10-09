@@ -1,8 +1,8 @@
 #
-# Cookbook Name:: windows_dhcp
+# Cookbook:: windows_dhcp
 # Resource:: scope
 #
-# Copyright 2014, Texas A&M
+# Copyright:: 2014, Texas A&M
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -27,14 +27,13 @@
 actions :create, :delete
 default_action :create
 
-attribute :name, :kind_of => String, :name_attribute => true
-attribute :startrange, :kind_of => String, :regex => Resolv::IPv4::Regex
-attribute :endrange, :kind_of => String, :regex => Resolv::IPv4::Regex
-attribute :subnetmask, :kind_of => String, :regex => Resolv::IPv4::Regex
-attribute :computername, :kind_of => String
-attribute :description, :kind_of => String
-attribute :version, :kind_of => String, :default => '4'
-attribute :scopeid, :kind_of => String, :regex => (Resolv::IPv4::Regex or Resolv::IPv6::Regex), :required => true
+attribute :startrange, kind_of: String, regex: Resolv::IPv4::Regex
+attribute :endrange, kind_of: String, regex: Resolv::IPv4::Regex
+attribute :subnetmask, kind_of: String, regex: Resolv::IPv4::Regex
+attribute :computername, kind_of: String
+attribute :description, kind_of: String
+attribute :version, kind_of: String, default: '4'
+attribute :scopeid, kind_of: String, regex: (Resolv::IPv4::Regex or Resolv::IPv6::Regex), required: true
 
 #  Optional params shared
 #    AsJob
@@ -45,7 +44,7 @@ attribute :scopeid, :kind_of => String, :regex => (Resolv::IPv4::Regex or Resolv
 #  Optional params IPv4
 #    ActivatePolicies: Boolean, default true;
 #    Delay: int16;
-#    LeaseDuration: day.hrs:mins:secs; 
+#    LeaseDuration: day.hrs:mins:secs;
 #    MaxBootpClients: int32;
 #    NapEnable:
 #    NapProfile:
@@ -55,9 +54,8 @@ attribute :scopeid, :kind_of => String, :regex => (Resolv::IPv4::Regex or Resolv
 #  Optional params IPv6
 #    PassThru
 #    Preference: int16
-#    PreferenceLifeTime: 
+#    PreferenceLifeTime:
 #    Prefix: IPAddress
 #    T1:
 #    T2:
-#    ValidLifeTime: 
-
+#    ValidLifeTime:
